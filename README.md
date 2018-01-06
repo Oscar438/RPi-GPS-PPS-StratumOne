@@ -1,15 +1,16 @@
-# RPi-GPS-PPS-StratumOne
+﻿# RPi-GPS-PPS-StratumOne
 
-setup a Raspberry Pi as an Stratum One NTP server.
-it is a private project i have made for myself.
-i did not keeped an eye on network security.
+The following has been modified to work using ethernet gadget and a rapsberry pi0. The original project
+can be found here: https://github.com/beta-tester/RPi-GPS-PPS-StratumOne
+
+setup a Raspberry Pi 0 as an Stratum One NTP server.
 
 USE IT AT YOUR OWN RISK
 
 ### overview schematic:
 ```
                      ╔═══╗       ╔══════╗         ╔══════╗  GPS-Antenna
-                   ──╢ s ║       ║RPi as╟RX───────╢GPS-  ║    ═╪═
+                   ──╢ S ║       ║RPi as╟RX───────╢GPS-  ║    ═╪═
                      ║ w ║       ║NTP-  ╟TX───────╢module║     │
                      ║ i ║       ║server║         ╠═══╗  ║     │
        ╔══════╗      ║ t ╟───eth0╢      ╟GPIO#4───╢PPS║  ╟─────┘
@@ -24,10 +25,10 @@ USE IT AT YOUR OWN RISK
 ## requirements
 
 ### hardware:
-- Raspberry Pi (with LAN)
+- Raspberry Pi 0
 - SD card
 - working network environment (with a connection to internet for installation only)
-- GPS module with PPS output (Adafruit Ultimate GPS Breakout - 66 channel w/10 Hz updates - Version 3; https://www.adafruit.com/products/746)
+- GPS module with PPS output http://navspark.mybigcommerce.com/
 
 ### software:
 - Raspbian Stretch Lite (2017-08-16, https://www.raspberrypi.org/downloads/raspbian/)

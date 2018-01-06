@@ -18,6 +18,12 @@ sudo systemctl stop serial-getty@ttyAMA0.service;
 sudo systemctl disable serial-getty@ttyAMA0.service;
 sudo sed -i -e "s/console=serial0,115200//" /boot/cmdline.txt;
 
+##################################################################
+#Add the ethernet gadget to the config.txt file
+sudo sh -c "cat << EOF  > /boot/cmdline.txt
+modules-load=dwc2,g_ether 
+EOF";
+
 
 ######################################################################
 handle_locale() {
@@ -123,12 +129,12 @@ sudo systemctl stop gpsd.socket;
 sudo systemctl stop gpsd.service;
 
 # default GPS device settings at power on
-stty -F /dev/ttyAMA0 9600
+#stty -F /dev/ttyAMA0 9600
 
 ## custom GPS device settings
 ## 115200baud io rate,
 #printf \x27\x24PMTK251,115200*1F\x5Cr\x5Cn\x27 \x3E /dev/ttyAMA0
-#stty -F /dev/ttyAMA0 115200
+stty -F /dev/ttyAMA0 115200
 ## 10 Hz update interval
 #printf \x27\x24PMTK220,100*2F\x5Cr\x5Cn\x27 \x3E /dev/ttyAMA0
 
@@ -219,6 +225,13 @@ hdmi_drive=2
 #                                edge, rather than by a rising edge
 # dtoverlay=pps-gpio,gpiopin=4,assert_falling_edge
 dtoverlay=pps-gpio,gpiopin=4
+
+#Enable ethernet gadget overlay
+dtoverlay=dwc2
+
+#Enable overlays for RTC module
+dtparam=i2c_arm=on
+dtoverlay=i2c-rtc, ds3231
 EOF";
     }
 
