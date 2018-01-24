@@ -21,7 +21,7 @@ sudo sed -i -e "s/console=serial0,115200//" /boot/cmdline.txt;
 ##################################################################
 #Add the ethernet gadget to the config.txt file
 sudo sh -c "cat << EOF  > /boot/cmdline.txt
-modules-load=dwc2,g_ether 
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=04843fb0-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait modules-load=dwc2,g_ether quiet splash plymouth.ignore-serial-consoles
 EOF";
 
 
@@ -231,7 +231,7 @@ dtoverlay=dwc2
 
 #Enable overlays for RTC module
 dtparam=i2c_arm=on
-dtoverlay=i2c-rtc, ds3231
+dtoverlay=i2c-rtc,ds3231
 EOF";
     }
 
