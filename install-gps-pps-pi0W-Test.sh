@@ -14,8 +14,8 @@ NTP_VER=4.2.8p10
 ##################################################################
 # if a GPS module is already installed and is giving GPS feed on the GPIO-serial port,
 # it can generate error messages to the console, because the kernel try to interprete this as commands from the boot console
-sudo systemctl stop serial-getty@ttyAMA0.service;
-sudo systemctl disable serial-getty@ttyAMA0.service;
+sudo systemctl stop serial-getty@serial0.service;
+sudo systemctl disable serial-getty@serial0.service;
 sudo sed -i -e "s/console=serial0,115200//" /boot/cmdline.txt;
 
 
@@ -83,8 +83,8 @@ handle_gps() {
     # specific to 2017-08-16-raspbian-stretch-lite
     echo -e "\e[36m    make boot quiet to serial port: serial0\e[0m";
     sudo sed -i -e "s/console=serial0,115200//" /boot/cmdline.txt;
-    sudo systemctl stop serial-getty@ttyAMA0.service;
-    sudo systemctl disable serial-getty@ttyAMA0.service;
+    sudo systemctl stop serial-getty@serial0.service;
+    sudo systemctl disable serial-getty@serial0.service;
 
     ##################################################################
     echo -e "\e[36m    install gpsd\e[0m";
@@ -99,7 +99,7 @@ handle_gps() {
 ## Stratum1
 START_DAEMON=\"true\"
 GPSD_OPTIONS=\"-n\"
-DEVICES=\"/dev/ttyAMA0 /dev/pps0\"
+DEVICES=\"/dev/serial0 /dev/pps0\"
 USBAUTO=\"false\"
 GPSD_SOCKET=\"/var/run/gpsd.sock\"
 EOF";
@@ -123,14 +123,14 @@ sudo systemctl stop gpsd.socket;
 sudo systemctl stop gpsd.service;
 
 # default GPS device settings at power on
-stty -F /dev/ttyAMA0 9600
+#stty -F /dev/serial0 9600
 
 ## custom GPS device settings
 ## 115200baud io rate,
-#printf \x27\x24PMTK251,115200*1F\x5Cr\x5Cn\x27 \x3E /dev/ttyAMA0
-#stty -F /dev/ttyAMA0 115200
+#printf \x27\x24PMTK251,115200*1F\x5Cr\x5Cn\x27 \x3E /dev/serial0
+stty -F /dev/serial0 115200
 ## 10 Hz update interval
-#printf \x27\x24PMTK220,100*2F\x5Cr\x5Cn\x27 \x3E /dev/ttyAMA0
+#printf \x27\x24PMTK220,100*2F\x5Cr\x5Cn\x27 \x3E /dev/serial0
 
 sudo systemctl restart gpsd.service;
 sudo systemctl restart gpsd.socket;
@@ -151,7 +151,7 @@ exit 0
         sudo sh -c "cat << EOF  > /etc/udev/rules.d/99-gps.rules
 ## Stratum1
 KERNEL==\"pps0\",SYMLINK+=\"gpspps0\"
-KERNEL==\"ttyAMA0\", SYMLINK+=\"gps0\"
+KERNEL==\"serial0\", SYMLINK+=\"gps0\"
 EOF";
     }
 }
@@ -219,6 +219,13 @@ hdmi_drive=2
 #                                edge, rather than by a rising edge
 # dtoverlay=pps-gpio,gpiopin=4,assert_falling_edge
 dtoverlay=pps-gpio,gpiopin=4
+
+#Enable ethernet gadget overlay
+dtoverlay=dwc2
+
+#Enable overlays for RTC module
+dtparam=i2c_arm=on
+dtoverlay=i2c-rtc,ds3231
 EOF";
     }
 
@@ -476,7 +483,7 @@ setup_chrony() {
 # http://www.catb.org/gpsd/gpsd-time-service-howto.html#_feeding_chrony_from_gpsd
 # gspd is looking for
 # /var/run/chrony.pps0.sock
-# /var/run/chrony.ttyAMA0.sock
+# /var/run/chrony.serial0.sock
 
 
 # Welcome to the chrony configuration file. See chrony.conf(5) for more
@@ -661,11 +668,11 @@ disable_timesyncd() {
 #sudo ppstest /dev/pps0
 #sudo ppswatch -a /dev/pps0
 #
-#sudo gpsd -D 5 -N -n /dev/ttyAMA0 /dev/pps0 -F /var/run/gpsd.sock
+#sudo gpsd -D 5 -N -n /dev/serial0 /dev/pps0 -F /var/run/gpsd.sock
 #sudo systemctl stop gpsd.*
 #sudo killall -9 gpsd
 #sudo dpkg-reconfigure -plow gpsd
-#minicom -b 9600 -o -D /dev/ttyAMA0
+#minicom -b 9600 -o -D /dev/serial0
 #cgps
 #xgps
 #gpsmon
