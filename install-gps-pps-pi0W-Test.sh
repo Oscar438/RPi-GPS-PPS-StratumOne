@@ -123,12 +123,12 @@ sudo systemctl stop gpsd.socket;
 sudo systemctl stop gpsd.service;
 
 # default GPS device settings at power on
-#stty -F /dev/serial0 9600
+stty -F /dev/serial0 9600
 
 ## custom GPS device settings
 ## 115200baud io rate,
 #printf \x27\x24PMTK251,115200*1F\x5Cr\x5Cn\x27 \x3E /dev/serial0
-stty -F /dev/serial0 115200
+#stty -F /dev/serial0 115200
 ## 10 Hz update interval
 #printf \x27\x24PMTK220,100*2F\x5Cr\x5Cn\x27 \x3E /dev/serial0
 
@@ -219,13 +219,6 @@ hdmi_drive=2
 #                                edge, rather than by a rising edge
 # dtoverlay=pps-gpio,gpiopin=4,assert_falling_edge
 dtoverlay=pps-gpio,gpiopin=4
-
-#Enable ethernet gadget overlay
-dtoverlay=dwc2
-
-#Enable overlays for RTC module
-dtparam=i2c_arm=on
-dtoverlay=i2c-rtc,ds3231
 EOF";
     }
 
